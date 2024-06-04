@@ -1,4 +1,5 @@
 # Desafío 1. Write Up
+Por Tomas Santana. CI 30604530
 
 ## Resumen ejecutivo
 
@@ -27,7 +28,7 @@ nmap -A -p- -sS 172.17.0.2
 ```
 Donde se busca la versión de los servicios (opción `-A`), se escanean todos los puertos (opción `-p-`) y se realiza un escaneo de forma sigilosa (opción `-sS`). Se obtiene la siguiente información:
 
-![RESULTADO SCAN NMAP](../assets/desafio1/nmap_scan.png)
+![Resultado del comando NMAP](../assets/desafio1/nmap_scan.png)
 
 Se observa que la máquina cuenta con los servicios FTP (ProFTPD), SSH (OpenSSH 9.2p1 Debian 2+deb12u2), DNS (ISC BIND 9.18.24-1 (Debian Linux)) y HTTP (nginx 1.22.1).
 
@@ -47,7 +48,7 @@ hydra -l tsantana -P /usr/share/wordlists/rockyou.txt ssh://172.17.0.2
 
 Donde se utiliza un solo nombre de usuario (`tsantana`) y un diccionario de contraseñas posibles (`rockyou.txt`). Como no se especifica la cantidad de hilos, `hydra` utilizará el máximo posible de la máquina. Muchas veces es recomendado limitar el número de tareas paralelas a 4. Al finalizar la ejecución se obtiene la siguiente respuesta:
 
-![RESULTADO HYDRA SSH](../assets/desafio1/hydra_res_ssh.png)
+![Resultado de hydra para el servicio ssh](../assets/desafio1/hydra_res_ssh.png)
 
 Se obtiene la contraseña del usuario `tsantana` (`volleyball`). 
 
@@ -56,7 +57,7 @@ Puede realizarse el mismo ataque al servicio FTP, y se obtiene el mismo resultad
 ```bash
 hydra -l tsantana -P /usr/share/wordlists/rockyou.txt ftp://172.17.0.2
 ```
-![RESULTADO HYDRA FTP](../assets/desafio1/hydra_res_ftp.png)
+![Resultado de hydra para el servicio ftp](../assets/desafio1/hydra_res_ftp.png)
 
 Ahora se puede acceder a la máquina con el usuario `tsantana` y la contraseña `volleyball`:
 
@@ -66,7 +67,7 @@ ssh tsantana@172.17.0.2
 
 E introducimos la contraseña `volleyball`. Se obtiene acceso a la máquina.
 
-![PROMPT SSH](../assets/desafio1/tsantana_prompt.png)
+![Acceso al sistema con el usuario `tsantana`](../assets/desafio1/tsantana_prompt.png)
 
 ## 4. Escalamiento de privilegios
 
@@ -81,7 +82,8 @@ Encontramos un archivo llamado `mensajeImportante`. Procedemos a leer el conteni
 cat /opt/mensajeImportante
 ```
 Se obtiene la siguiente respuesta:
-![alt text](../assets/desafio1/mensaje_importante.png)
+
+![Contenido de `mensajeImportante`](../assets/desafio1/mensaje_importante.png)
 
 
 Se procede a buscar el código de la asignatura de Ciberseguridad de la Universidad Rafael Urdaneta. Este es `272T37`. Ahora se puede intentar acceder a la máquina con el usuario `hbracho` y la contraseña `272T37`:
@@ -92,29 +94,13 @@ ssh hbracho@172.17.0.2
 
 Introducimos la contraseña `272T37`. Se obtiene acceso a la máquina.
 
-![PROMPT SSH](../assets/desafio1/hbracho_prompt.png)
+![Acceso al sistema con el usuario `hbracho`](../assets/desafio1/hbracho_prompt.png)
 
 ### Obtención del acceso root
 
 Se debe encontrar una forma de obtener acceso root. Se puede intentar buscar binarios que pueda ejecutar el usuario `hbracho` con permisos de root. Para ello se puede utilizar el comando `sudo -l`:
 
-```bash
-sudo -l
-```
-
-Se obtiene la siguiente respuesta:
-
-```
-Matching Defaults entries for hbracho on 39a4fb3fb0dc:
-    env_reset, mail_badpass,
-    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin,
-    use_pty
-
-User hbracho may run the following commands on 39a4fb3fb0dc:
-    (ALL) NOPASSWD: /usr/bin/env
-```
-
-![RESULTADO SUDO -L](../assets/desafio1/sudo_l.png)
+![Resultado del comando `sudo -l`](../assets/desafio1/sudo_l.png)
 
 Se observa que el usuario `hbracho` puede ejecutar el comando `/usr/bin/env` con permisos de root sin necesidad de contraseña. 
 
@@ -131,7 +117,7 @@ sudo env sh
 
 En cualquier caso el resultado es el mismo, se obtiene una shell con permisos de root.
 
-![PROMPT ROOT](../assets/desafio1/root.png)
+![Acceso al sistema con el usuario `root`](../assets/desafio1/root.png)
 
 Se ha obtenido acceso root a la máquina.
 

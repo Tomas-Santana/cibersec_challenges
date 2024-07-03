@@ -1,3 +1,4 @@
 {
-  "cSpell.language": "en,es-ES"
+  "cSpell.language": "en,es-ES",
+  "latex-workshop.latex.outDir": "../../write-ups/%DOCFILE%"
 }
